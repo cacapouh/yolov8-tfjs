@@ -60,6 +60,8 @@ export const renderBoxes = (canvasRef, boxes_data, scores_data, classes_data, ra
     // Draw labels
     ctx.fillStyle = "#ffffff";
     ctx.fillText(klass + " - " + score + "%", x1 - 1, yText < 0 ? 0 : yText);
+
+    console.log(klass, score + "%", {"x1": x1, "y1": y1, "x2": x2, "y2": y2});
   }
 };
 

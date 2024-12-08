@@ -90,28 +90,3 @@ export const detect = async (source, model, canvasRef, callback = () => {}) => {
 
   tf.engine().endScope(); // end of scoping
 };
-
-/**
- * Function to detect video from every source.
- * @param {HTMLVideoElement} vidSource video source
- * @param {tf.GraphModel} model loaded YOLOv8 tensorflow.js model
- * @param {HTMLCanvasElement} canvasRef canvas reference
- */
-export const detectVideo = (vidSource, model, canvasRef) => {
-  /**
-   * Function to detect every frame from video
-   */
-  const detectFrame = async () => {
-    if (vidSource.videoWidth === 0 && vidSource.srcObject === null) {
-      const ctx = canvasRef.getContext("2d");
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // clean canvas
-      return; // handle if source is closed
-    }
-
-    detect(vidSource, model, canvasRef, () => {
-      requestAnimationFrame(detectFrame); // get another frame
-    });
-  };
-
-  detectFrame(); // initialize to detect every frame
-};

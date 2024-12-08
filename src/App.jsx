@@ -3,7 +3,7 @@ import * as tf from "@tensorflow/tfjs";
 import "@tensorflow/tfjs-backend-webgl"; // set backend to webgl
 import Loader from "./components/loader";
 import ButtonHandler from "./components/btn-handler";
-import { detect, detectVideo } from "./utils/detect";
+import { detect } from "./utils/detect";
 import "./style/App.css";
 
 const App = () => {
@@ -20,7 +20,7 @@ const App = () => {
   const canvasRef = useRef(null);
 
   // model configs
-  const modelName = "yolov8n";
+  const modelName = "yolov11x";
 
   useEffect(() => {
     tf.ready().then(async () => {
@@ -51,9 +51,9 @@ const App = () => {
     <div className="App">
       {loading.loading && <Loader>Loading model... {(loading.progress * 100).toFixed(2)}%</Loader>}
       <div className="header">
-        <h1>📷 YOLOv8 Live Detection App</h1>
+        <h1>📷 YOLOv11 将棋検出アプリ</h1>
         <p>
-          YOLOv8 live detection application on browser powered by <code>tensorflow.js</code>
+          YOLOv11 detection application on browser powered by <code>tensorflow.js</code>
         </p>
         <p>
           Serving : <code className="code">{modelName}</code>
@@ -65,18 +65,6 @@ const App = () => {
           src="#"
           ref={imageRef}
           onLoad={() => detect(imageRef.current, model, canvasRef.current)}
-        />
-        <video
-          autoPlay
-          muted
-          ref={cameraRef}
-          onPlay={() => detectVideo(cameraRef.current, model, canvasRef.current)}
-        />
-        <video
-          autoPlay
-          muted
-          ref={videoRef}
-          onPlay={() => detectVideo(videoRef.current, model, canvasRef.current)}
         />
         <canvas width={model.inputShape[1]} height={model.inputShape[2]} ref={canvasRef} />
       </div>

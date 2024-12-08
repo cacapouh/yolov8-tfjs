@@ -1,0 +1,109 @@
+description: Ultralytics YOLO11x model trained on /datasets/datasets/data.yaml
+author: Ultralytics
+date: '2024-12-08T11:19:52.538104'
+version: 8.3.47
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: black-bishop
+  1: black-bishop-2
+  2: black-bishop-3
+  3: black-bishop-4
+  4: black-dragon
+  5: black-gold
+  6: black-gold-2
+  7: black-gold-3
+  8: black-gold-4
+  9: black-horse
+  10: black-king
+  11: black-knight
+  12: black-knight-2
+  13: black-knight-3
+  14: black-knight-4
+  15: black-lance
+  16: black-lance-2
+  17: black-lance-3
+  18: black-lance-4
+  19: black-pawn
+  20: black-pawn-10
+  21: black-pawn-11
+  22: black-pawn-12
+  23: black-pawn-13
+  24: black-pawn-14
+  25: black-pawn-15
+  26: black-pawn-16
+  27: black-pawn-17
+  28: black-pawn-18
+  29: black-pawn-2
+  30: black-pawn-3
+  31: black-pawn-4
+  32: black-pawn-5
+  33: black-pawn-6
+  34: black-pawn-7
+  35: black-pawn-8
+  36: black-pawn-9
+  37: black-prom-knight
+  38: black-prom-lance
+  39: black-prom-pawn
+  40: black-prom-silver
+  41: black-rook
+  42: black-silver
+  43: black-silver-2
+  44: black-silver-3
+  45: black-silver-4
+  46: board
+  47: white-bishop
+  48: white-bishop-2
+  49: white-bishop-3
+  50: white-bishop-4
+  51: white-dragon
+  52: white-gold
+  53: white-gold-2
+  54: white-gold-3
+  55: white-gold-4
+  56: white-horse
+  57: white-king
+  58: white-knight
+  59: white-knight-2
+  60: white-knight-3
+  61: white-knight-4
+  62: white-lance
+  63: white-lance-2
+  64: white-lance-3
+  65: white-lance-4
+  66: white-pawn
+  67: white-pawn-10
+  68: white-pawn-11
+  69: white-pawn-12
+  70: white-pawn-13
+  71: white-pawn-14
+  72: white-pawn-15
+  73: white-pawn-16
+  74: white-pawn-17
+  75: white-pawn-18
+  76: white-pawn-2
+  77: white-pawn-3
+  78: white-pawn-4
+  79: white-pawn-5
+  80: white-pawn-6
+  81: white-pawn-7
+  82: white-pawn-8
+  83: white-pawn-9
+  84: white-prom-knight
+  85: white-prom-lance
+  86: white-prom-pawn
+  87: white-prom-silver
+  88: white-rook
+  89: white-rook-2
+  90: white-rook-3
+  91: white-rook-4
+  92: white-silver
+  93: white-silver-2
+  94: white-silver-3
+  95: white-silver-4
