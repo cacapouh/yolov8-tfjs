@@ -66,6 +66,22 @@ const replaceDots = (input) => {
     }).join('/');
 }
 
+const simplifyString = (input) => {
+  let result = '';
+  let count = 1;
+
+  for (let i = 1; i <= input.length; i++) {
+      if (input[i] === input[i - 1]) {
+          count++;
+      } else {
+          result += input[i - 1] + (count > 1 ? count : '');
+          count = 1;
+      }
+  }
+
+  return result;
+}
+
 export const createSfen = (result) => {
   const board = result.filter((e) => e["class"] == "board")[0];
   const boardWidth = board["x2"] - board["x1"];
@@ -120,5 +136,7 @@ export const createSfen = (result) => {
       goteMochiGomaSfen += sfen;
     }
   });
+  senteMochiGomaSfen = simplifyString(senteMochiGomaSfen);
+  goteMochiGomaSfen = simplifyString(goteMochiGomaSfen);
   console.log(senteMochiGomaSfen, goteMochiGomaSfen);
 };
