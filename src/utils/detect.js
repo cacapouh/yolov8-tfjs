@@ -45,7 +45,7 @@ const preprocess = (source, modelWidth, modelHeight) => {
  * @param {HTMLCanvasElement} canvasRef canvas reference
  * @param {VoidFunction} callback function to run after detection process
  */
-export const detect = async (source, model, canvasRef, callback = () => {}) => {
+export const detect = async (source, model, canvasRef, callback = ([]) => {}) => {
   const [modelWidth, modelHeight] = model.inputShape.slice(1, 3); // get model width and height
 
   tf.engine().startScope(); // start scoping tf engine
@@ -83,10 +83,10 @@ export const detect = async (source, model, canvasRef, callback = () => {}) => {
   const scores_data = scores.gather(nms, 0).dataSync(); // indexing scores by nms index
   const classes_data = classes.gather(nms, 0).dataSync(); // indexing classes by nms index
 
-  renderBoxes(canvasRef, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
+  const results = renderBoxes(canvasRef, boxes_data, scores_data, classes_data, [xRatio, yRatio]); // render boxes
   tf.dispose([res, transRes, boxes, scores, classes, nms]); // clear memory
 
-  callback();
+  callback(results);
 
   tf.engine().endScope(); // end of scoping
 };

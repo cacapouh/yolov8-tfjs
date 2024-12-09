@@ -9,6 +9,7 @@ import labels from "./labels.json";
  * @param {Array[Number]} ratios boxes ratio [xRatio, yRatio]
  */
 export const renderBoxes = (canvasRef, boxes_data, scores_data, classes_data, ratios) => {
+  const results = [];
   const ctx = canvasRef.getContext("2d");
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // clean canvas
 
@@ -61,8 +62,18 @@ export const renderBoxes = (canvasRef, boxes_data, scores_data, classes_data, ra
     ctx.fillStyle = "#ffffff";
     ctx.fillText(klass + " - " + score + "%", x1 - 1, yText < 0 ? 0 : yText);
 
-    console.log(klass, score + "%", {"x1": x1, "y1": y1, "x2": x2, "y2": y2});
+    const result = {
+      "class": klass,
+      "score": score,
+      "x1": x1,
+      "y1": y1,
+      "x2": x2,
+      "y2": y2
+    }
+    results.push(result);
   }
+
+  return results;
 };
 
 class Colors {

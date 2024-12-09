@@ -5,6 +5,7 @@ import Loader from "./components/loader";
 import ButtonHandler from "./components/btn-handler";
 import { detect } from "./utils/detect";
 import "./style/App.css";
+import { createSfen } from "./utils/sfen";
 
 const App = () => {
   const [loading, setLoading] = useState({ loading: true, progress: 0 }); // loading state
@@ -55,16 +56,20 @@ const App = () => {
         <p>
           YOLOv11 detection application on browser powered by <code>tensorflow.js</code>
         </p>
-        <p>
-          Serving : <code className="code">{modelName}</code>
-        </p>
       </div>
 
       <div className="content">
         <img
           src="#"
           ref={imageRef}
-          onLoad={() => detect(imageRef.current, model, canvasRef.current)}
+          onLoad={
+            () => detect(
+              imageRef.current,
+              model,
+              canvasRef.current,
+              (results) => createSfen(results)
+            )
+          }
         />
         <canvas width={model.inputShape[1]} height={model.inputShape[2]} ref={canvasRef} />
       </div>
