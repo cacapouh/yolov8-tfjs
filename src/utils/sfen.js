@@ -1,5 +1,14 @@
 const sfenMap = new Map();
 
+const multiSet = (klass, sfen, num) => {
+    for (let i = 2; i <= num; num++) {
+        sfenMap.set(
+            klass + '-' + i,
+            sfen.repeat(i)
+        );
+    }
+}
+
 sfenMap.set('white-lance', 'l');
 sfenMap.set('white-knight', 'n');
 sfenMap.set('white-silver', 's');
@@ -14,6 +23,13 @@ sfenMap.set('white-prom-lance', '+l');
 sfenMap.set('white-prom-silver', '+s');
 sfenMap.set('white-horse', '+b');
 sfenMap.set('white-dragon', '+r');
+multiSet('white-lance', 'l', 4);
+multiSet('white-knight', 'n', 4);
+multiSet('white-silver', 's', 4);
+multiSet('white-gold', 'g', 4);
+multiSet('white-rook', 'r', 4);
+multiSet('white-bishop', 'b', 4);
+multiSet('white-pawn', 'p', 18);
 
 sfenMap.set('black-lance', 'L');
 sfenMap.set('black-knight', 'N');
@@ -29,6 +45,13 @@ sfenMap.set('black-prom-lance', '+L');
 sfenMap.set('black-prom-silver', '+S');
 sfenMap.set('black-horse', '+B');
 sfenMap.set('black-dragon', '+R');
+multiSet('black-lance', 'l', 4);
+multiSet('black-knight', 'n', 4);
+multiSet('black-silver', 's', 4);
+multiSet('black-gold', 'g', 4);
+multiSet('black-rook', 'r', 4);
+multiSet('black-bishop', 'b', 4);
+multiSet('black-pawn', 'p', 18);
 
 const isInRange = (koma, x1, y1, x2, y2) => {
   const x = (koma["x1"] + koma["x2"]) / 2;
