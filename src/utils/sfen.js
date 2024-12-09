@@ -1,7 +1,7 @@
 const sfenMap = new Map();
 
 const multiSet = (klass, sfen, num) => {
-    for (let i = 2; i <= num; num++) {
+    for (let i = 2; i <= num; i++) {
         sfenMap.set(
             klass + '-' + i,
             sfen.repeat(i)
@@ -45,13 +45,13 @@ sfenMap.set('black-prom-lance', '+L');
 sfenMap.set('black-prom-silver', '+S');
 sfenMap.set('black-horse', '+B');
 sfenMap.set('black-dragon', '+R');
-multiSet('black-lance', 'l', 4);
-multiSet('black-knight', 'n', 4);
-multiSet('black-silver', 's', 4);
-multiSet('black-gold', 'g', 4);
-multiSet('black-rook', 'r', 4);
-multiSet('black-bishop', 'b', 4);
-multiSet('black-pawn', 'p', 18);
+multiSet('black-lance', 'L', 4);
+multiSet('black-knight', 'N', 4);
+multiSet('black-silver', 'S', 4);
+multiSet('black-gold', 'G', 4);
+multiSet('black-rook', 'R', 4);
+multiSet('black-bishop', 'B', 4);
+multiSet('black-pawn', 'P', 18);
 
 const isInRange = (koma, x1, y1, x2, y2) => {
   const x = (koma["x1"] + koma["x2"]) / 2;
@@ -102,5 +102,23 @@ export const createSfen = (result) => {
   }
   let resultSfen = replaceDots(sfenXs.join('/'))
 
-  console.log(resultSfen);
+  // 盤外の駒
+  const komasOutOfBoard = komas.filter(koma => !isInRange(koma, board["x1"], board["y1"], board["x2"], board["y2"]));
+  const senteMochiGomas = komasOutOfBoard.filter(koma => koma["class"].includes("black"));
+  let senteMochiGomaSfen = "";
+  senteMochiGomas.forEach(koma => {
+    const sfen = sfenMap.get(koma['class']);
+    if(sfen) {
+      senteMochiGomaSfen += sfen;
+    }
+  });
+  const goteMochiGomas = komasOutOfBoard.filter(koma => koma["class"].includes("white"));
+  let goteMochiGomaSfen = "";
+  goteMochiGomas.forEach(koma => {
+    const sfen = sfenMap.get(koma['class']);
+    if(sfen) {
+      goteMochiGomaSfen += sfen;
+    }
+  });
+  console.log(senteMochiGomaSfen, goteMochiGomaSfen);
 };
