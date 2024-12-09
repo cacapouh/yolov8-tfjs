@@ -74,7 +74,7 @@ const simplifyString = (input) => {
       if (input[i] === input[i - 1]) {
           count++;
       } else {
-          result += input[i - 1] + (count > 1 ? count : '');
+          result += (count > 1 ? count : '') + input[i - 1];
           count = 1;
       }
   }
@@ -139,4 +139,12 @@ export const createSfen = (result) => {
   senteMochiGomaSfen = simplifyString(senteMochiGomaSfen);
   goteMochiGomaSfen = simplifyString(goteMochiGomaSfen);
   console.log(senteMochiGomaSfen, goteMochiGomaSfen);
+
+  let mochiGomaSfen = senteMochiGomaSfen + goteMochiGomaSfen;
+  if(!mochiGomaSfen) {
+    mochiGomaSfen = "-";
+  }
+  resultSfen += ` b ${mochiGomaSfen} 1`
+  console.log(resultSfen);
+  return resultSfen;
 };
