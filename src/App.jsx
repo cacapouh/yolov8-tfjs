@@ -50,11 +50,14 @@ const App = () => {
 
   return (
     <div className="App">
-      {loading.loading && <Loader>Loading model... {(loading.progress * 100).toFixed(2)}%</Loader>}
+      {loading.loading && (
+        <Loader>Loading model... {(loading.progress * 100).toFixed(2)}%</Loader>
+      )}
       <div className="header">
         <h1>📷 YOLOv11 将棋検出アプリ</h1>
         <p>
-          YOLOv11 detection application on browser powered by <code>tensorflow.js</code>
+          YOLOv11 detection application on browser powered by{" "}
+          <code>tensorflow.js</code>
         </p>
       </div>
 
@@ -62,19 +65,32 @@ const App = () => {
         <img
           src="#"
           ref={imageRef}
-          onLoad={
-            () => detect(
-              imageRef.current,
-              model,
-              canvasRef.current,
-              (results) => createSfen(results)
-            )
+          onLoad={() =>
+            detect(imageRef.current, model, canvasRef.current, (results) => {
+              const aTag = document.getElementById("url");
+              const sfen = createSfen(results);
+              aTag.href =
+                "https://cacapouh.github.io/tsumeshogi-solver-wasm/?sfen=" +
+                encodeURIComponent(sfen);
+            })
           }
         />
-        <canvas width={model.inputShape[1]} height={model.inputShape[2]} ref={canvasRef} />
+        <canvas
+          width={model.inputShape[1]}
+          height={model.inputShape[2]}
+          ref={canvasRef}
+        />
       </div>
 
-      <ButtonHandler imageRef={imageRef} cameraRef={cameraRef} videoRef={videoRef} />
+      <ButtonHandler
+        imageRef={imageRef}
+        cameraRef={cameraRef}
+        videoRef={videoRef}
+      />
+
+      <div>
+        <a id="url">詰将棋Solverへのリンク</a>
+      </div>
     </div>
   );
 };
