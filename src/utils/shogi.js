@@ -178,6 +178,11 @@ const createKomas = (sfen) => {
 };
 
 const showMove = (komas, usiMove) => {
+  let suffix = "";
+  if(usiMove[usiMove.length - 1] == "+") {
+    suffix = "成"
+  }
+
   // 持ち駒から打つ場合
   if (usiMove.includes("*")) {
     const koma = komaMap.get(usiMove[0]);
@@ -194,5 +199,5 @@ const showMove = (komas, usiMove) => {
     );
   });
 
-  return `${to["show"]}${komaMap.get(maybeKoma.koma)}(${from["show"]})`;
+  return `${to["show"]}${komaMap.get(maybeKoma.koma)}${suffix}(${from["show"]})`;
 };
