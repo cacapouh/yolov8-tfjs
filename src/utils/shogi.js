@@ -58,8 +58,45 @@ class KomaWithPosition {
   }
 }
 
+const applyMove = (komas, usiMove) => {
+  return komas.map((koma) => {
+    // usiMoveの形式: "76g77h" -> [76g]: from, [77h]: to
+    const fromSuji = parseInt(usiMove[0]);
+    const fromDan = usiMove[1];
+    const toSuji = parseInt(usiMove[2]);
+    const toDan = usiMove[3];
+  
+    // 盤上の駒を動かす場合
+    if (koma.position) {
+      // 移動元の駒を削除
+      if (koma.position.suji === fromSuji && koma.position.dan === fromDan) {
+        // 駒が成る場合("+")
+        if (usiMove.length === 5 && usiMove[4] === "+") {
+          return new KomaWithPosition(
+            `+${koma.koma}`, // 成駒に変更
+            new Position(toDan, toSuji)
+          );
+        }
+        // 駒が成らない場合
+        return new KomaWithPosition(
+          koma.koma,
+          new Position(toDan, toSuji)
+        );
+      }
+    }
+  
+    // 持ち駒から打つ場合
+    if (!koma.position && koma.koma === usiMove[0]) {
+      const position = positionMap.get(`${usiMove[2]}${usiMove[3]}`);
+      return new KomaWithPosition(koma.koma, position);
+    }
+  
+    return koma; // 他の駒はそのまま
+  });
+}
+
 export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
-  const komas = createKomas(sfen);
+  let komas = createKomas(sfen);
 
   let count = 0;
   if(sfen.split(" ")[1] == "w") { // 後手番
@@ -68,7 +105,9 @@ export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
   return usiMoves.map((move) => {
     const prefix = ["☗", "☖"][count % 2];
     count++;
-    return prefix + showMove(komas, move);
+    const result = prefix + showMove(komas, move);
+    komas = applyMove(komas, move);
+    return result;
   });
 };
 
