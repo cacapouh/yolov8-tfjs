@@ -193,10 +193,6 @@ const showMove = (komas, usiMove) => {
       koma.position && koma.position.suji == from["suji"] && koma.position.dan == from["dan"]
     );
   });
-  if(!maybeKoma) {
-    console.log(usiMove);
-    console.log(komas);
-  }
 
   return `${to["show"]}${komaMap.get(maybeKoma.koma)}(${from["show"]})`;
 };
