@@ -89,11 +89,13 @@ const createKomas = (sfen) => {
 
     for (let x = 0; x < sujis.length; x++) {
       const maybeKoma = lineWithoutNumber[x];
-      if (maybeKoma != "." && maybeKoma != "+") {
-        if(0 <= x - 1 && lineWithoutNumber[x - 1] == '+') {
+
+      if (maybeKoma != ".") {
+        if(maybeKoma == "+") {
           komaWithPositions.push(
-            new KomaWithPosition('+' + maybeKoma, new Position(dans[y], sujis[x]))
+            new KomaWithPosition('+' + lineWithoutNumber[x + 1], new Position(dans[y], sujis[x]))
           );
+          x++;
         } else {
           komaWithPositions.push(
             new KomaWithPosition(maybeKoma, new Position(dans[y], sujis[x]))
