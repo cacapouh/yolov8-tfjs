@@ -65,7 +65,7 @@ export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
   if(sfen.split(" ")[1] == "w") { // 後手番
     count = 1;
   }
-  return usiMoves.split(" ").map((move) => {
+  return usiMoves.map((move) => {
     const prefix = ["☗", "☖"][count % 2];
     count++;
     return prefix + showMove(komas, move);
@@ -86,12 +86,19 @@ const createKomas = (sfen) => {
     const lineWithoutNumber = line.replace(/\d/g, (match) =>
       ".".repeat(Number(match))
     ); // 数字をその数だけドットに置き換える(例: ln1g3nl => ln.g...nl)
+
     for (let x = 0; x < sujis.length; x++) {
       const maybeKoma = lineWithoutNumber[x];
-      if (maybeKoma != ".") {
-        komaWithPositions.push(
-          new KomaWithPosition(maybeKoma, new Position(dans[y], sujis[x]))
-        );
+      if (maybeKoma != "." && maybeKoma != "+") {
+        if(0 <= x - 1 && lineWithoutNumber[x - 1] == '+') {
+          komaWithPositions.push(
+            new KomaWithPosition('+' + maybeKoma, new Position(dans[y], sujis[x]))
+          );
+        } else {
+          komaWithPositions.push(
+            new KomaWithPosition(maybeKoma, new Position(dans[y], sujis[x]))
+          );
+        }
       }
     }
   }
@@ -122,12 +129,14 @@ const showMove = (komas, usiMove) => {
   const from = positionMap.get(usiMove[0] + usiMove[1]);
   const to = positionMap.get(usiMove[2] + usiMove[3]);
   const maybeKoma = komas.find((koma) => {
-    console.log(koma, from);
     return (
-      koma.position.suji == from["suji"] && koma.position.dan == from["dan"]
+      koma.position && koma.position.suji == from["suji"] && koma.position.dan == from["dan"]
     );
   });
-  komaMap.get(maybeKoma.koma);
+  if(!maybeKoma) {
+    console.log(usiMove);
+    console.log(komas);
+  }
 
   return `${to["show"]}${komaMap.get(maybeKoma.koma)}(${from["show"]})`;
 };

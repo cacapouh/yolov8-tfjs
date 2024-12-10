@@ -4,9 +4,6 @@ export class ShogiEngine {
       this.options = {
         Threads: 1,
         USI_Hash: 16,
-        NetworkDelay: 0,
-        NetworkDelay2: 0,
-        MinimumThinkingTime: 1000,
         PvInterval: 0
       };
     }
@@ -86,13 +83,13 @@ export class ShogiEngine {
     }
   
     async bestmove(gameUsi, time, level) {
-      return (await this.think(gameUsi, time, { ConsiderationMode: false, MultiPV: 1, SkillLevel: level ?? 20 })).split(
+      return (await this.think(gameUsi, time, {})).split(
         /\s+/
       )[1];
     }
   
     async research(gameUsi, time, mpv, callback) {
-      return await this.think(gameUsi, time, { ConsiderationMode: true, MultiPV: mpv, SkillLevel: 20 }, callback);
+      return await this.think(gameUsi, time, {}, callback);
     }
   }
   

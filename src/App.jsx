@@ -7,6 +7,7 @@ import { detect } from "./utils/detect";
 import "./style/App.css";
 import { createSfen } from "./utils/sfen";
 import { ShogiEngine } from "./utils/ShogiEngine";
+import { expectedMovesToHumanReadable } from "./utils/shogi";
 
 
 const App = () => {
@@ -15,7 +16,8 @@ const App = () => {
     net: null,
     inputShape: [1, 0, 0, 3],
     sfen: "",
-    messageFromEngine: "_"
+    messageFromEngine: "",
+    expectedMoves: ""
   }); // init model & input shape
 
   // references
@@ -28,6 +30,24 @@ const App = () => {
   const modelName = "yolov11x";
 
   const engine = new ShogiEngine();
+  const research = async (sfen) => {
+    await engine.research(`position sfen ${sfen}`, 1000, 1, (r) => {
+      let expectedMoves = "";
+      if(r.includes('checkmate') && !r.includes('nomate')) {
+        console.log(r);
+        const moves = r.split(" ").slice(2);
+        expectedMoves = expectedMovesToHumanReadable(sfen, moves);
+      }
+
+      setModel({
+        net: model.net,
+        inputShape: model.inputShape,
+        sfen: sfen,
+        messageFromEngine: r,
+        expectedMoves: expectedMoves
+      })
+    });
+  };
 
   useEffect(() => {
     tf.ready().then(async () => {
@@ -74,15 +94,7 @@ const App = () => {
           onLoad={async () =>
             detect(imageRef.current, model, canvasRef.current, async (results) => {
               const sfen = createSfen(results);
-              await engine.research(`position sfen ${sfen.value}`, 1000, 1, (r) => {
-                setModel({
-                  net: model.net,
-                  inputShape: model.inputShape,
-                  sfen: sfen,
-                  messageFromEngine: r
-                })
-                console.log(r);
-              });
+              await research(sfen);
             })
           }
         />
@@ -120,8 +132,8 @@ const App = () => {
         <br />
         <textarea
           readOnly
-          v-model="humanReadableMessage"
           className="message-area"
+          value={model.expectedMoves}
         ></textarea>
       </div>
     </div>
