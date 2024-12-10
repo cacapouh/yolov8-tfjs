@@ -80,8 +80,7 @@ const App = () => {
       <div className="header">
         <h1>🏳 😇 詰将棋敗北者Web 😇 🏳</h1>
         <p>
-          YOLOv11 detection application on browser powered by{" "}
-          <code>tensorflow.js</code>
+          画像から詰将棋を解く
         </p>
       </div>
 
@@ -136,7 +135,7 @@ const App = () => {
         ></textarea>
         <br />
 
-        <label>将棋エンジンからの応答:</label>
+        <label>詰将棋エンジンからの応答:</label>
         <br />
         <textarea
           readOnly
@@ -145,6 +144,22 @@ const App = () => {
         ></textarea>
         <br />
       </div>
+
+      <br />
+      <hr />
+      <br />
+
+      <p>
+        Powered by <a href="https://github.com/yaneurao/YaneuraOu">YaneuraOu</a>
+        , <a href="https://github.com/mizar/YaneuraOu.wasm">YaneuraOu.wasm</a>,{" "}
+        <a href="https://github.com/usumerican/yaneuraou-suisho-petite/">
+          yaneuraou-suisho-petite
+        </a>
+        , <a href="https://github.com/ultralytics/ultralytics">YOLO</a>
+        , <a href="https://github.com/Hyuto/yolov8-tfjs">yolov8-tfjs</a>
+        , <a href="https://vuejs.org/">Vue.js</a>
+      </p>
+      <br />
     </div>
   );
 };
