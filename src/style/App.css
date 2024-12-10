@@ -72,10 +72,10 @@ button:hover {
 }
 
 .message-area {
-  width: 90vh;
+  width: 50vh;
   height: 10vh;
 }
 
 .debug-message-area {
-  width: 90vh;
+  width: 50vh;
 }
