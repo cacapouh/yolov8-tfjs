@@ -6,12 +6,16 @@ import ButtonHandler from "./components/btn-handler";
 import { detect } from "./utils/detect";
 import "./style/App.css";
 import { createSfen } from "./utils/sfen";
+import { ShogiEngine } from "./utils/ShogiEngine";
+
 
 const App = () => {
   const [loading, setLoading] = useState({ loading: true, progress: 0 }); // loading state
   const [model, setModel] = useState({
     net: null,
     inputShape: [1, 0, 0, 3],
+    sfen: "",
+    messageFromEngine: "_"
   }); // init model & input shape
 
   // references
@@ -22,6 +26,8 @@ const App = () => {
 
   // model configs
   const modelName = "yolov11x";
+
+  const engine = new ShogiEngine();
 
   useEffect(() => {
     tf.ready().then(async () => {
@@ -54,7 +60,7 @@ const App = () => {
         <Loader>Loading model... {(loading.progress * 100).toFixed(2)}%</Loader>
       )}
       <div className="header">
-        <h1>📷 YOLOv11 将棋検出アプリ</h1>
+        <h1>🏳 😇 詰将棋敗北者Web 😇 🏳</h1>
         <p>
           YOLOv11 detection application on browser powered by{" "}
           <code>tensorflow.js</code>
@@ -65,13 +71,18 @@ const App = () => {
         <img
           src="#"
           ref={imageRef}
-          onLoad={() =>
-            detect(imageRef.current, model, canvasRef.current, (results) => {
-              const aTag = document.getElementById("url");
+          onLoad={async () =>
+            detect(imageRef.current, model, canvasRef.current, async (results) => {
               const sfen = createSfen(results);
-              aTag.href =
-                "https://cacapouh.github.io/tsumeshogi-solver-wasm/?sfen=" +
-                encodeURIComponent(sfen);
+              await engine.research(`position sfen ${sfen.value}`, 1000, 1, (r) => {
+                setModel({
+                  net: model.net,
+                  inputShape: model.inputShape,
+                  sfen: sfen,
+                  messageFromEngine: r
+                })
+                console.log(r);
+              });
             })
           }
         />
@@ -88,8 +99,30 @@ const App = () => {
         videoRef={videoRef}
       />
 
+      <br />
+
       <div>
-        <a id="url">詰将棋Solverへのリンク</a>
+        <label>SFEN(将棋の局面を表す文字列):</label>
+        <br />
+        <textarea readOnly className="message-area" value={model.sfen}></textarea>
+        <br />
+
+        <label>将棋エンジンからの応答:</label>
+        <br />
+        <textarea
+          readOnly
+          className="message-area"
+          value={model.messageFromEngine}
+        ></textarea>
+        <br />
+
+        <label>読み筋:</label>
+        <br />
+        <textarea
+          readOnly
+          v-model="humanReadableMessage"
+          className="message-area"
+        ></textarea>
       </div>
     </div>
   );

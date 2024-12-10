@@ -138,13 +138,11 @@ export const createSfen = (result) => {
   });
   senteMochiGomaSfen = simplifyString(senteMochiGomaSfen);
   goteMochiGomaSfen = simplifyString(goteMochiGomaSfen);
-  console.log(senteMochiGomaSfen, goteMochiGomaSfen);
 
   let mochiGomaSfen = senteMochiGomaSfen + goteMochiGomaSfen;
   if(!mochiGomaSfen) {
     mochiGomaSfen = "-";
   }
   resultSfen += ` b ${mochiGomaSfen} 1`
-  console.log(resultSfen);
   return resultSfen;
 };
