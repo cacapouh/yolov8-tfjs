@@ -9,7 +9,6 @@ import { createSfen } from "./utils/sfen";
 import { ShogiEngine } from "./utils/ShogiEngine";
 import { expectedMovesToHumanReadable } from "./utils/shogi";
 
-
 const App = () => {
   const [loading, setLoading] = useState({ loading: true, progress: 0 }); // loading state
   const [model, setModel] = useState({
@@ -17,7 +16,7 @@ const App = () => {
     inputShape: [1, 0, 0, 3],
     sfen: "",
     messageFromEngine: "",
-    expectedMoves: ""
+    expectedMoves: "",
   }); // init model & input shape
 
   // references
@@ -33,7 +32,7 @@ const App = () => {
   const research = async (sfen) => {
     await engine.research(`position sfen ${sfen}`, 1000, 1, (r) => {
       let expectedMoves = "";
-      if(r.includes('checkmate') && !r.includes('nomate')) {
+      if (r.includes("checkmate") && !r.includes("nomate")) {
         const moves = r.split(" ").slice(2);
         expectedMoves = expectedMovesToHumanReadable(sfen, moves);
       }
@@ -43,8 +42,8 @@ const App = () => {
         inputShape: model.inputShape,
         sfen: sfen,
         messageFromEngine: r,
-        expectedMoves: expectedMoves
-      })
+        expectedMoves: expectedMoves,
+      });
     });
   };
 
@@ -91,10 +90,15 @@ const App = () => {
           src="#"
           ref={imageRef}
           onLoad={async () =>
-            detect(imageRef.current, model, canvasRef.current, async (results) => {
-              const sfen = createSfen(results);
-              await research(sfen);
-            })
+            detect(
+              imageRef.current,
+              model,
+              canvasRef.current,
+              async (results) => {
+                const sfen = createSfen(results);
+                await research(sfen);
+              }
+            )
           }
         />
         <canvas
@@ -113,20 +117,6 @@ const App = () => {
       <br />
 
       <div>
-        <label>SFEN(将棋の局面を表す文字列):</label>
-        <br />
-        <textarea readOnly className="message-area" value={model.sfen}></textarea>
-        <br />
-
-        <label>将棋エンジンからの応答:</label>
-        <br />
-        <textarea
-          readOnly
-          className="message-area"
-          value={model.messageFromEngine}
-        ></textarea>
-        <br />
-
         <label>読み筋:</label>
         <br />
         <textarea
@@ -134,6 +124,26 @@ const App = () => {
           className="message-area"
           value={model.expectedMoves}
         ></textarea>
+      </div>
+
+      <div>
+        <label>SFEN(将棋の局面を表す文字列):</label>
+        <br />
+        <textarea
+          readOnly
+          className="debug-message-area"
+          value={model.sfen}
+        ></textarea>
+        <br />
+
+        <label>将棋エンジンからの応答:</label>
+        <br />
+        <textarea
+          readOnly
+          className="debug-message-area"
+          value={model.messageFromEngine}
+        ></textarea>
+        <br />
       </div>
     </div>
   );

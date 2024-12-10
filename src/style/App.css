@@ -75,3 +75,7 @@ button:hover {
   width: 90vh;
   height: 10vh;
 }
+
+.debug-message-area {
+  width: 90vh;
+}
