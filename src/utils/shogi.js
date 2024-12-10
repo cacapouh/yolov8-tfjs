@@ -72,6 +72,31 @@ export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
   });
 };
 
+const tokenizeSfenLine = (input) => {
+  const tokens = [];
+  let currentToken = '';
+  for (let i = 0; i < input.length; i++) {
+      const char = input[i];
+      if (char === '+') {
+          if (currentToken) {
+              tokens.push(currentToken);
+              currentToken = '';
+          }
+          currentToken += char;
+      } else if (currentToken.startsWith('+')) {
+          currentToken += char;
+          tokens.push(currentToken);
+          currentToken = '';
+      } else {
+          tokens.push(char);
+      }
+  }
+  if (currentToken) {
+      tokens.push(currentToken);
+  }
+  return tokens;
+}
+
 const createKomas = (sfen) => {
   const komaWithPositions = [];
 
@@ -87,20 +112,14 @@ const createKomas = (sfen) => {
       ".".repeat(Number(match))
     ); // 数字をその数だけドットに置き換える(例: ln1g3nl => ln.g...nl)
 
+    const tokenizedLine = tokenizeSfenLine(lineWithoutNumber); // 成駒を一塊として扱う(例: l+n.g...nl => ['l', '+n', '.', '.', '.', 'n', 'l'])
     for (let x = 0; x < sujis.length; x++) {
-      const maybeKoma = lineWithoutNumber[x];
+      const maybeKoma = tokenizedLine[x];
 
       if (maybeKoma != ".") {
-        if(maybeKoma == "+") {
-          komaWithPositions.push(
-            new KomaWithPosition('+' + lineWithoutNumber[x + 1], new Position(dans[y], sujis[x]))
-          );
-          x++;
-        } else {
-          komaWithPositions.push(
-            new KomaWithPosition(maybeKoma, new Position(dans[y], sujis[x]))
-          );
-        }
+        komaWithPositions.push(
+          new KomaWithPosition(maybeKoma, new Position(dans[y], sujis[x]))
+        );
       }
     }
   }
