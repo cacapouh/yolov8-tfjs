@@ -33,7 +33,7 @@ const App = () => {
     await engine.research(`position sfen ${sfen}`, 1000, 1, (r) => {
       let expectedMoves = "詰みなし";
       if (r.includes("checkmate") && !r.includes("nomate")) {
-        const moves = r.split(" ").slice(2);
+        const moves = r.split(" ").slice(1);
         expectedMoves = expectedMovesToHumanReadable(sfen, moves);
       }
 
