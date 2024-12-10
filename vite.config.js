@@ -7,7 +7,6 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 2000, // handle warning on vendor.js bundle size
   },
-  base: "/yolov8-tfjs/",
   server: {
     headers: {
       "Cross-Origin-Embedder-Policy": "require-corp",
