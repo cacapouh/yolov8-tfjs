@@ -31,7 +31,7 @@ const App = () => {
   const engine = new ShogiEngine();
   const research = async (sfen) => {
     await engine.research(`position sfen ${sfen}`, 1000, 1, (r) => {
-      let expectedMoves = "";
+      let expectedMoves = "詰みなし";
       if (r.includes("checkmate") && !r.includes("nomate")) {
         const moves = r.split(" ").slice(2);
         expectedMoves = expectedMovesToHumanReadable(sfen, moves);
@@ -116,7 +116,7 @@ const App = () => {
       <br />
 
       <div>
-        <label>読み筋:</label>
+        <label>詰み筋:</label>
         <br />
         <textarea
           readOnly
