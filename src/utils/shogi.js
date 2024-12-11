@@ -62,7 +62,40 @@ class KomaWithPosition {
   }
 }
 
-const applyMove = (komas, usiMove) => {
+const reverseCase = (str) => {
+  if(/[A-Z]/.test(str)) {
+    return str.toLowerCase();
+  } else {
+    return str.toUpperCase();
+  }
+}
+
+const printKomas = (komas) => {
+  console.log("");
+  for(let y = 0; y < dans.length; y++) {
+    let line = "";
+    for(let x = 0; x < sujis.length; x++) {
+      const dan = dans[y];
+      const suji = sujis[x];
+
+      const koma = komas.find(koma => {
+        return koma.position && koma.position.dan == dan && koma.position.suji == suji;
+      });
+
+      if(koma) {
+        line += koma.koma;
+      } else {
+        line += "_";
+      }
+    }
+    console.log(line);
+  }
+  console.log("");
+  console.log(komas.filter(k => !k.position).map(k => k.koma));
+  console.log("");
+}
+
+const applyMove = (komas, usiMove, isSente) => {
   const result = JSON.parse(JSON.stringify(komas)); // deep copy
   const deleteOne = (koma) => {
     let index = -1;
@@ -83,10 +116,17 @@ const applyMove = (komas, usiMove) => {
   };
 
   if (usiMove.includes("*")) { // 持ち駒を打つ場合
-    const fromKoma = new KomaWithPosition(usiMove[0]);
-    deleteOne(fromKoma); // 持ち駒を削除
     const position = positionMap.get(`${usiMove[2]}${usiMove[3]}`);
-    result.push(new KomaWithPosition(fromKoma.koma, position));
+
+    if(isSente) {
+      const fromKoma = new KomaWithPosition(usiMove[0]);
+      deleteOne(fromKoma); // 持ち駒を削除
+      result.push(new KomaWithPosition(fromKoma.koma, position));
+    } else {
+      const fromKoma = new KomaWithPosition(usiMove[0].toLowerCase());
+      deleteOne(fromKoma); // 持ち駒を削除
+      result.push(new KomaWithPosition(fromKoma.koma, position));
+    }
     return result;
   }
 
@@ -115,12 +155,19 @@ const applyMove = (komas, usiMove) => {
     if (maybeToKoma) {
       // 相手の駒を取る場合
       deleteOne(maybeToKoma);
-      result.push(new KomaWithPosition(maybeToKoma.koma));
+      const k = reverseCase(maybeToKoma.koma).replace("+", "");
+      result.push(new KomaWithPosition(k));
     }
 
-    result.push(
-      new KomaWithPosition(fromKoma.koma, new Position(toDan, toSuji))
-    );
+    if(usiMove[usiMove.length-1] == "+") { // 成る場合
+      result.push(
+        new KomaWithPosition("+" + fromKoma.koma, new Position(toDan, toSuji))
+      );
+    } else {
+      result.push(
+        new KomaWithPosition(fromKoma.koma, new Position(toDan, toSuji))
+      );
+    }
   }
 
   return result;
@@ -140,8 +187,8 @@ export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
     const prefix = ["☗", "☖"][count % 2];
     count++;
     const result = prefix + showMove(komas, move);
-    console.log(komas);
-    komas = applyMove(komas, move);
+    printKomas(komas);
+    komas = applyMove(komas, move, prefix == "☗");
     return result;
   });
 };
@@ -187,7 +234,6 @@ const createKomas = (sfen) => {
     ); // 数字をその数だけドットに置き換える(例: ln1g3nl => ln.g...nl)
 
     const tokenizedLine = tokenizeSfenLine(lineWithoutNumber); // 成駒を一塊として扱う(例: l+n.g...nl => ['l', '+n', '.', '.', '.', 'n', 'l'])
-    console.log(tokenizedLine);
     for (let x = 0; x < sujis.length; x++) {
       const maybeKoma = tokenizedLine[x];
 
