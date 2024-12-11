@@ -36,6 +36,12 @@ const App = () => {
         const moves = r.split(" ").slice(1);
         expectedMoves = expectedMovesToHumanReadable(sfen, moves);
       }
+      if (r.includes("pv")) {
+          const match = r.match(/pv\s+(.*)/);
+          const movesString = match ? match[1] : "";
+          const moves = movesString.split(" ")
+          expectedMoves = expectedMovesToHumanReadable(sfen, moves);
+      }
 
       setModel({
         net: model.net,

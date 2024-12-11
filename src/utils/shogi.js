@@ -56,56 +56,91 @@ class KomaWithPosition {
     this.koma = koma;
     this.position = position;
   }
+
+  get show() {
+    return komaMap.get(this.koma);
+  }
 }
 
 const applyMove = (komas, usiMove) => {
-  return komas.map((koma) => {
-    // usiMoveの形式: "76g77h" -> [76g]: from, [77h]: to
-    const fromSuji = parseInt(usiMove[0]);
-    const fromDan = usiMove[1];
-    const toSuji = parseInt(usiMove[2]);
-    const toDan = usiMove[3];
-  
-    // 盤上の駒を動かす場合
-    if (koma.position) {
-      // 移動元の駒を削除
-      if (koma.position.suji === fromSuji && koma.position.dan === fromDan) {
-        // 駒が成る場合("+")
-        if (usiMove.length === 5 && usiMove[4] === "+") {
-          return new KomaWithPosition(
-            `+${koma.koma}`, // 成駒に変更
-            new Position(toDan, toSuji)
-          );
+  const result = JSON.parse(JSON.stringify(komas)); // deep copy
+  const deleteOne = (koma) => {
+    let index = -1;
+    for(let i = 0; i < result.length; i++) {
+      const k = result[i];
+      if(k.koma == koma.koma) {
+        if(!(k.position) && !(koma.position)) {
+          index = i;
+          break;
         }
-        // 駒が成らない場合
-        return new KomaWithPosition(
-          koma.koma,
-          new Position(toDan, toSuji)
-        );
+        if(k.position && koma.position && k.position.suji == koma.position.suji && k.position.dan == koma.position.dan) {
+          index = i;
+          break;
+        }
       }
     }
-  
-    // 持ち駒から打つ場合
-    if (!koma.position && koma.koma === usiMove[0]) {
-      const position = positionMap.get(`${usiMove[2]}${usiMove[3]}`);
-      return new KomaWithPosition(koma.koma, position);
-    }
-  
-    return koma; // 他の駒はそのまま
+    result.splice(index, 1);
+  };
+
+  if (usiMove.includes("*")) { // 持ち駒を打つ場合
+    const fromKoma = new KomaWithPosition(usiMove[0]);
+    deleteOne(fromKoma); // 持ち駒を削除
+    const position = positionMap.get(`${usiMove[2]}${usiMove[3]}`);
+    result.push(new KomaWithPosition(fromKoma.koma, position));
+    return result;
+  }
+
+  const fromSuji = parseInt(usiMove[0]);
+  const fromDan = usiMove[1];
+  const toSuji = parseInt(usiMove[2]);
+  const toDan = usiMove[3];
+
+  // 移動対象の駒
+  const fromKoma = komas.find((koma) => {
+    return koma.position && koma.position.suji == fromSuji && koma.position.dan == fromDan;
   });
-}
+  // 移動先にある駒
+  const maybeToKoma = komas.find((koma) => {
+    return (
+      koma.position &&
+      koma.position.suji == toSuji &&
+      koma.position.dan == toDan
+    );
+  });
+
+  if (fromKoma.position) {
+    // 盤上の駒を動かす場合
+    deleteOne(fromKoma); // まずは移動元の駒を削除
+
+    if (maybeToKoma) {
+      // 相手の駒を取る場合
+      deleteOne(maybeToKoma);
+      result.push(new KomaWithPosition(maybeToKoma.koma));
+    }
+
+    result.push(
+      new KomaWithPosition(fromKoma.koma, new Position(toDan, toSuji))
+    );
+  }
+
+  return result;
+};
 
 export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
+  console.log(usiMoves);
+  console.log(sfen);
   let komas = createKomas(sfen);
 
   let count = 0;
-  if(sfen.split(" ")[1] == "w") { // 後手番
+  if (sfen.split(" ")[1] == "w") {
+    // 後手番
     count = 1;
   }
   return usiMoves.map((move) => {
     const prefix = ["☗", "☖"][count % 2];
     count++;
     const result = prefix + showMove(komas, move);
+    console.log(komas);
     komas = applyMove(komas, move);
     return result;
   });
@@ -113,28 +148,28 @@ export const expectedMovesToHumanReadable = (sfen, usiMoves) => {
 
 const tokenizeSfenLine = (input) => {
   const tokens = [];
-  let currentToken = '';
+  let currentToken = "";
   for (let i = 0; i < input.length; i++) {
-      const char = input[i];
-      if (char === '+') {
-          if (currentToken) {
-              tokens.push(currentToken);
-              currentToken = '';
-          }
-          currentToken += char;
-      } else if (currentToken.startsWith('+')) {
-          currentToken += char;
-          tokens.push(currentToken);
-          currentToken = '';
-      } else {
-          tokens.push(char);
+    const char = input[i];
+    if (char === "+") {
+      if (currentToken) {
+        tokens.push(currentToken);
+        currentToken = "";
       }
+      currentToken += char;
+    } else if (currentToken.startsWith("+")) {
+      currentToken += char;
+      tokens.push(currentToken);
+      currentToken = "";
+    } else {
+      tokens.push(char);
+    }
   }
   if (currentToken) {
-      tokens.push(currentToken);
+    tokens.push(currentToken);
   }
   return tokens;
-}
+};
 
 const createKomas = (sfen) => {
   const komaWithPositions = [];
@@ -152,6 +187,7 @@ const createKomas = (sfen) => {
     ); // 数字をその数だけドットに置き換える(例: ln1g3nl => ln.g...nl)
 
     const tokenizedLine = tokenizeSfenLine(lineWithoutNumber); // 成駒を一塊として扱う(例: l+n.g...nl => ['l', '+n', '.', '.', '.', 'n', 'l'])
+    console.log(tokenizedLine);
     for (let x = 0; x < sujis.length; x++) {
       const maybeKoma = tokenizedLine[x];
 
@@ -179,8 +215,8 @@ const createKomas = (sfen) => {
 
 const showMove = (komas, usiMove) => {
   let suffix = "";
-  if(usiMove[usiMove.length - 1] == "+") {
-    suffix = "成"
+  if (usiMove[usiMove.length - 1] == "+") {
+    suffix = "成";
   }
 
   // 持ち駒から打つ場合
@@ -195,9 +231,13 @@ const showMove = (komas, usiMove) => {
   const to = positionMap.get(usiMove[2] + usiMove[3]);
   const maybeKoma = komas.find((koma) => {
     return (
-      koma.position && koma.position.suji == from["suji"] && koma.position.dan == from["dan"]
+      koma.position &&
+      koma.position.suji == from["suji"] &&
+      koma.position.dan == from["dan"]
     );
   });
 
-  return `${to["show"]}${komaMap.get(maybeKoma.koma)}${suffix}(${from["show"]})`;
+  return `${to["show"]}${komaMap.get(maybeKoma.koma)}${suffix}(${
+    from["show"]
+  })`;
 };
